@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Application</title>
+</head>
+<body>
+
+<h2>Confirm Application</h2>
+<p>Are you sure you want to apply for the selected jobs?</p>
+
+<form method="POST">
+    <button type="submit">Yes, Apply</button>
+    <a href="{{ url_for('jobs.jobs') }}">Cancel</a>
+</form>
+
+</body>
+</html>

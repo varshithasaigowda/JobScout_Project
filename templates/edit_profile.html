@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<style>
+    .select2-container--default .select2-selection--multiple {
+        background: rgba(0,0,0,0.3) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        min-height: 45px;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: var(--queen-pink) !important;
+        color: black !important;
+        border: none !important;
+        border-radius: 4px;
+    }
+    .select2-dropdown { background-color: #1a1a2e !important; color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+    .select2-results__option--highlighted { background-color: var(--queen-pink) !important; color: black !important; }
+</style>
+
+<div class="glass-card" style="max-width: 900px; margin: 100px auto; padding: 40px; border: 1px solid rgba(255,255,255,0.1);">
+    <h2 style="color: #FFFFFF; margin-bottom: 30px; text-align: center;">🧬 Update Professional Portfolio</h2>
+    <form action="{{ url_for('auth.edit_profile') }}" method="POST" enctype="multipart/form-data" autocomplete="off">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <div class="form-group">
+                <label style="color: var(--queen-pink);">Username</label>
+                <input type="text" name="username" value="{{ user.username }}" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 12px; color: white; border-radius: 8px;">
+            </div>
+            <div class="form-group">
+                <label style="color: var(--queen-pink);">GitHub URL</label>
+                <input type="url" name="github_link" value="{{ user.github_link or '' }}" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 12px; color: white; border-radius: 8px;">
+            </div>
+            <div style="grid-column: span 2;">
+                <label style="color: var(--queen-pink);">Professional Bio</label>
+                <textarea name="bio" rows="3" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 12px; color: white; border-radius: 8px;">{{ user.bio or '' }}</textarea>
+            </div>
+
+            <div style="grid-column: span 2;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label style="color: var(--queen-pink); margin: 0;">Professional Skills</label>
+                    <button type="button" onclick="toggleSkillMode()" style="background: rgba(255,255,255,0.1); color: #00FFCC; border: 1px solid #00FFCC; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
+                        ⚡ Toggle Skill Selector
+                    </button>
+                </div>
+                
+                <div id="manual-input-container">
+                    <input type="text" id="skills-manual" name="skills" value="{{ user.skills or '' }}" placeholder="e.g. Python, Flask, SQL" style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 12px; color: white; border-radius: 8px;">
+                </div>
+
+                <div id="dropdown-input-container" style="display: none;">
+                    <select id="skills-dropdown" multiple="multiple" style="width: 100%;"></select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label style="color: var(--queen-pink);">Resume (PDF Only)</label>
+                <input type="file" name="resume" style="color: white; font-size: 0.8rem;">
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: center;">
+            <button type="submit" class="btn-primary" style="margin-top: 40px; width: 60%; padding: 15px; font-weight: bold; letter-spacing: 1px;">SAVE CHANGES</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let isDropdownMode = false;
+    const manualInput = document.getElementById('skills-manual');
+    const manualContainer = document.getElementById('manual-input-container');
+    const dropdownContainer = document.getElementById('dropdown-input-container');
+
+    function toggleSkillMode() {
+        isDropdownMode = !isDropdownMode;
+        if (isDropdownMode) {
+            manualContainer.style.display = 'none';
+            dropdownContainer.style.display = 'block';
+            fetchDatabaseSkills();
+        } else {
+            manualContainer.style.display = 'block';
+            dropdownContainer.style.display = 'none';
+        }
+    }
+
+    function fetchDatabaseSkills() {
+        fetch('/jobs/api/get-all-skills')
+            .then(res => res.json())
+            .then(data => {
+                const select = $('#skills-dropdown');
+                select.empty();
+                data.forEach(skill => {
+                    select.append(new Option(skill, skill));
+                });
+                // Sync current text input to dropdown selection
+                let currentSkills = manualInput.value.split(',').map(s => s.trim()).filter(s => s !== "");
+                select.val(currentSkills).trigger('change');
+            });
+    }
+
+    $(document).ready(function() {
+        $('#skills-dropdown').select2({
+            placeholder: "Choose skills from the database range...",
+            allowClear: true
+        });
+
+        $('#skills-dropdown').on('change', function() {
+            const vals = $(this).val();
+            manualInput.value = vals ? vals.join(', ') : "";
+        });
+    });
+</script>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <script>alert("Success: Profile Updated!");</script>
+  {% endif %}
+{% endwith %}
+{% endblock %}

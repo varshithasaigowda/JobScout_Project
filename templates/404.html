@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="error-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; text-align: center; padding: 20px;">
+    
+    <div class="floating dna-rotate" style="margin-bottom: 40px;">
+        <svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="var(--queen-pink)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.5 7c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5s-2 4.5-4.5 4.5s-4.5-2-4.5-4.5Z"/>
+            <path d="M15 7h6"/>
+            <path d="M15 11h6"/>
+            <path d="M15 3h6"/>
+            <path d="m3 21 5.1-5.1"/>
+            <path d="M11 15v6"/>
+            <path d="M7 15v6"/>
+            <path d="M15 15v6"/>
+        </svg>
+    </div>
+
+    <div class="glass-card" style="padding: 50px; max-width: 600px; backdrop-filter: blur(20px);">
+        <h1 class="text-mask-gradient" style="font-size: 8rem; line-height: 1; margin: 0;">404</h1>
+        <h2 style="color: var(--queen-pink); font-size: 2rem; margin-top: 0;">Lost in the DNA Stream</h2>
+        <p style="color: var(--old-lavender); margin-bottom: 30px; font-size: 1.1rem;">
+            The professional coordinates you are looking for don't exist in our database. 
+            Perhaps they were re-sequenced?
+        </p>
+        
+        <div style="display: flex; gap: 20px; justify-content: center;">
+            <a href="{{ url_for('home') }}" class="btn-primary" style="padding: 15px 40px;">Return to Base</a>
+            <a href="{{ url_for('jobs.discover') }}" style="color: white; text-decoration: none; align-self: center; border-bottom: 1px solid var(--middle-purple); padding-bottom: 2px;">
+                View Job Feed
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom 404 Glow */
+.error-container {
+    background: radial-gradient(circle at center, rgba(209, 131, 169, 0.1) 0%, transparent 70%);
+}
+
+.text-mask-gradient {
+    text-shadow: 0 0 30px rgba(209, 131, 169, 0.3);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jobs-page" style="padding: 40px 5%; max-width: 1400px; margin: 0 auto;">
+    <div style="margin-bottom: 30px; text-align: left; position: relative;">
+        <h1 style="font-size: 3rem; color: var(--queen-pink); margin-bottom: 5px;">Priority Discovery</h1>
+        <p style="color: #FFFFFF; opacity: 0.8; font-size: 1.1rem; max-width: 800px;">
+            Explore curated opportunities tailored specifically to your professional DNA. 
+        </p>
+
+        <div style="position: absolute; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px;">
+            <span style="color: #888; font-size: 0.9rem;">Sort Match</span>
+            <button onclick="location.href='{{ url_for('jobs.discover', sort='on' if sort_state == 'off' else 'off') }}'" 
+                    style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; padding: 8px 15px; font-size: 1.2rem; color: {{ '#00FFCC' if sort_state == 'on' else 'white' }};">
+                {{ '⬆️⬇️' }}
+            </button>
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px;">
+
+    <div class="jobs-grid" style="display: flex; flex-direction: column; gap: 25px;">
+        {% for item in jobs %}
+        <div class="glass-card job-card" style="padding: 30px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: grid; grid-template-columns: 1fr 250px;">
+                <div class="job-info">
+                    <h2 style="color: white; margin-bottom: 5px;">{{ item.job.title }}</h2>
+                    <h4 style="color: var(--pearly-purple);">{{ item.job.company }}</h4>
+                    <button onclick="toggleInfo({{ item.job.id }})" style="background:none; border:none; color:#00FFCC; cursor:pointer; padding:0; margin:10px 0; font-size:0.8rem;">+ More Info</button>
+                    
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+                        {% for skill in item.job.required_skills.split(',') %}
+                            {% set s = skill.strip().lower() %}
+                            <span style="padding: 5px 12px; border-radius: 4px; font-size: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid {{ '#00FFCC' if current_user.skills and s in current_user.skills.lower() else 'rgba(255,255,255,0.1)' }}; color: {{ '#00FFCC' if current_user.skills and s in current_user.skills.lower() else '#888' }};">
+                                {{ skill.strip() }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 2.5rem; font-weight: 800; color: #00FFCC;">{{ item.score }}%</div>
+                    
+                    {% if item.applied %}
+                        <button id="btn-{{ item.job.id }}" onclick="toggleApply({{ item.job.id }})" class="btn-primary" style="margin-top: 20px; width: 80%; background: #28a745; color: white;">Applied for this job</button>
+                    {% else %}
+                        <button id="btn-{{ item.job.id }}" onclick="toggleApply({{ item.job.id }})" class="btn-primary" style="margin-top: 20px; width: 80%;">Apply Now</button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="info-{{ item.job.id }}" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); color: #ccc; font-size: 0.9rem;">
+                <p><strong>Description:</strong> {{ item.job.description }}</p>
+                <p style="margin-top:10px;"><strong>Experience:</strong> {{ item.job.experience_level }}</p>
+                <p><strong>Location:</strong> {{ item.job.location }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function toggleInfo(id) {
+    const el = document.getElementById('info-' + id);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleApply(id) {
+    const btn = document.getElementById('btn-' + id);
+    const isApplied = btn.innerText === "Applied for this job";
+
+    if (!isApplied) {
+        if(confirm("Are you sure? Your Professional DNA and data will be sent to the recruiter portal for review.")){
+            fetch('/jobs/apply/' + id, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'applied') {
+                        btn.innerText = "Applied for this job";
+                        btn.style.background = "#28a745";
+                        btn.style.color = "white";
+                    } else if (data.status === 'limit_reached') {
+                        alert(data.message);
+                    }
+                });
+        }
+    } else {
+        fetch('/jobs/cancel/' + id, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'cancelled') {
+                    btn.innerText = "Apply Now";
+                    btn.style.background = ""; 
+                    btn.style.color = "";
+                } else if (data.status === 'blocked') {
+                    alert(data.message);
+                }
+            });
+    }
+}
+</script>
+{% endblock %}

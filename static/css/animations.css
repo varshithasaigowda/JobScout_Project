@@ -1,0 +1,94 @@
+/* --- JOB SCOUT: CINEMATIC ANIMATIONS (ANIMATIONS.CSS) --- */
+
+/* 1. TEXT MASKING (Image 2 Style) 
+   The background gradient will be visible INSIDE the text */
+.text-mask-gradient {
+    background: linear-gradient(
+        45deg, 
+        var(--queen-pink), 
+        var(--middle-purple), 
+        var(--pearly-purple), 
+        var(--queen-pink)
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientFlow 8s ease infinite;
+    font-weight: 900;
+}
+
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 2. PARALLAX FLOATING ELEMENTS 
+   Apply these to background decorative shapes */
+.parallax-slow {
+    transform: translateZ(-1px) scale(2);
+    z-index: -1;
+}
+
+.floating {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+/* 3. REVEAL ON SCROLL 
+   Used for the "Very Large" homepage sections */
+.reveal {
+    position: relative;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 1.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.reveal.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* 4. SHIMMER EFFECT 
+   A light ray that passes over the glass cards */
+.shimmer-sweep {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-sweep::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 50%;
+    height: 300%;
+    background: linear-gradient(
+        to right, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.1) 50%, 
+        rgba(255,255,255,0) 100%
+    );
+    transform: rotate(25deg);
+    animation: shimmer 4s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+
+/* 5. DNA SPIRAL ROTATION (Iconography) */
+.dna-rotate {
+    animation: rotateDNA 15s linear infinite;
+}
+
+@keyframes rotateDNA {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

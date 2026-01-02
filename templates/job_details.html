@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="details-container" style="padding: 60px 10%; max-width: 1000px; margin: 0 auto;">
+    <a href="{{ url_for('jobs.discover') }}" style="color: #00FFCC; text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 20px;">
+        <i class="fas fa-arrow-left"></i> Back to Discovery
+    </a>
+
+    <div class="glass-card" style="padding: 40px; border: 1px solid rgba(255,255,255,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">
+            <div>
+                <h1 style="color: white; font-size: 2.5rem; margin-bottom: 5px;">{{ job.title }}</h1>
+                <h3 style="color: var(--pearly-purple);">{{ job.company }}</h3>
+                <p style="color: #888; margin-top: 10px;"><i class="fas fa-map-marker-alt"></i> {{ job.location }} | <i class="fas fa-briefcase"></i> {{ job.experience_level }}</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="color: #888; font-size: 0.8rem; text-transform: uppercase;">Posted on</p>
+                <p style="color: white;">{{ job.date_posted.strftime('%Y-%m-%d') }}</p>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <h4 style="color: var(--queen-pink); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Job Description</h4>
+            <p style="color: #CCC; line-height: 1.8; font-size: 1.1rem;">{{ job.description }}</p>
+        </div>
+
+        <div style="margin-bottom: 40px;">
+            <h4 style="color: var(--queen-pink); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Required Skills</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for skill in job.required_skills.split(',') %}
+                <span style="background: rgba(0, 255, 204, 0.1); color: #00FFCC; padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(0, 255, 204, 0.3); font-size: 0.9rem;">
+                    {{ skill.strip() }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <button id="detail-apply-btn" onclick="applyJob({{ job.id }})" class="btn-primary" style="padding: 15px 50px; font-size: 1.1rem;">Instant Apply Now</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function applyJob(jobId) {
+    const btn = document.getElementById('detail-apply-btn');
+    fetch(`/jobs/apply/${jobId}`, {method: 'POST'})
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === 'success') {
+            btn.innerText = "Applied Successfully";
+            btn.style.background = "#28a745";
+            btn.disabled = true;
+            setTimeout(() => { window.location.href = "{{ url_for('dashboard') }}"; }, 1500);
+        } else {
+            alert(data.message);
+        }
+    });
+}
+</script>
+{% endblock %}

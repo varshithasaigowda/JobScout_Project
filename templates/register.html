@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container" style="display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 20px;">
+    <div class="glass-card" style="width: 100%; max-width: 450px; padding: 40px; text-align: center;">
+        <h1 style="color: var(--queen-pink); margin-bottom: 10px;">Join the Elite</h1>
+        <p style="color: var(--old-lavender); margin-bottom: 30px;">Initialize your professional DNA</p>
+
+        <form action="{{ url_for('auth.register') }}" method="POST" autocomplete="off">
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--queen-pink);">Full Name</label>
+                <input type="text" name="username" required autocomplete="off"
+                       style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: white;">
+            </div>
+
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--queen-pink);">Email Address</label>
+                <input type="email" name="email" required autocomplete="off"
+                       style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: white;">
+            </div>
+
+            <div style="text-align: left; margin-bottom: 30px; position: relative;">
+                <label style="display: block; margin-bottom: 8px; color: var(--queen-pink);">Password</label>
+                <input type="password" name="password" id="register-password" required autocomplete="new-password"
+                       style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; color: white;">
+                <span onclick="togglePassword('register-password')" 
+                      style="position: absolute; right: 15px; top: 42px; cursor: pointer; color: var(--old-lavender); font-size: 1.2rem;">👁️</span>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.1rem; margin-bottom: 20px;">Register Now</button>
+        </form>
+
+        <a href="{{ url_for('auth.google_login') }}" 
+           style="display: flex; align-items: center; justify-content: center; gap: 10px; background: white; color: #333; text-decoration: none; padding: 12px; border-radius: 12px; font-weight: 600; border: 1px solid #ddd;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width:20px;">
+            Continue with Google
+        </a>
+
+        <p style="margin-top: 25px; color: var(--old-lavender);">
+            Already a member? <a href="{{ url_for('auth.login') }}" style="color: var(--queen-pink); text-decoration: none; font-weight: 600;">Sign In</a>
+        </p>
+    </div>
+</div>
+
+<script>
+function togglePassword(id) {
+    const pwdInput = document.getElementById(id);
+    pwdInput.type = pwdInput.type === "password" ? "text" : "password";
+}
+</script>
+{% endblock %}

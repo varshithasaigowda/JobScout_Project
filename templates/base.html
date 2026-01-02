@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOB SCOUT | Premium Job Discovery</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <nav class="glass-nav">
+        <div class="logo">
+            <a href="{{ url_for('home') }}" style="text-decoration: none;">
+                <h1 style="color: var(--queen-pink); font-weight: 800; letter-spacing: -1px;">JOB<span style="color: white;">SCOUT</span></h1>
+            </a>
+        </div>
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" style="color: white; margin-right: 20px; text-decoration: none;">Dashboard</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn-primary" style="padding: 8px 20px;">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" style="color: white; margin-right: 20px; text-decoration: none;">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn-primary">Get Started</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main style="padding-top: 80px; min-height: 80vh;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="glass-card" style="margin: 20px 5%; padding: 15px; border-left: 5px solid var(--pearly-purple); animation: slideIn 0.5s ease;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="background: var(--brown-coffee); padding: 80px 5% 40px; margin-top: 100px; border-top: 1px solid var(--glass-border);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;">
+            <div>
+                <h2 style="color: var(--queen-pink); margin-bottom: 20px;">JOB SCOUT</h2>
+                <p style="color: var(--old-lavender);">The elite automated job application system designed for high-end professional DNA matching.</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 20px;">Quick Links</h4>
+                <ul style="list-style: none; color: var(--queen-pink);">
+                    <li style="margin-bottom: 10px;">Privacy Policy</li>
+                    <li style="margin-bottom: 10px;">Terms of Service</li>
+                    <li style="margin-bottom: 10px;">Recruiter Access</li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 20px;">Contact</h4>
+                <p style="color: var(--old-lavender);">support@jobscout.ai</p>
+                <div style="margin-top: 20px; font-size: 24px;">
+                    </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 60px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); color: var(--old-lavender);">
+            &copy; 2025 JOB SCOUT. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

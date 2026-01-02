@@ -1,0 +1,108 @@
+/* --- JOB SCOUT GLOBAL THEME (BASE.CSS) --- */
+
+:root {
+    --jacarta: #3A345B;
+    --middle-purple: #D183A9;
+    --queen-pink: #F3C8DD;
+    --old-lavender: #71557A;
+    --pearly-purple: #BA71A2;
+    --brown-coffee: #461D3A;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at top right, var(--middle-purple), var(--jacarta) 60%);
+    background-attachment: fixed;
+    color: white;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* --- GLASSMORPHISM UTILITY --- */
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(58, 52, 91, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- BUTTONS & ACTIONS --- */
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--pearly-purple), var(--middle-purple));
+    color: white;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(186, 113, 162, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(186, 113, 162, 0.6);
+    filter: brightness(1.1);
+}
+
+/* --- SCROLLBAR DESIGN --- */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--jacarta);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--old-lavender);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--middle-purple);
+}
+
+/* --- DYNAMIC STATUS TAGS --- */
+
+.status-tag {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-delivered { background: var(--old-lavender); color: white; }
+.status-accepted { background: #50C878; color: white; box-shadow: 0 0 10px #50C878; }
+.status-rejected { background: var(--brown-coffee); color: #F3C8DD; }
+.status-hold { background: #F4BB44; color: black; }

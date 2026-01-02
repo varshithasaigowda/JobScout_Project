@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recruiter Portal | JobScout</title>
+    <style>
+        :root { --pink: #BA71A2; --cyan: #00FFCC; --bg: #0a0a12; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; padding: 40px; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; margin-bottom: 20px; transition: 0.3s; }
+        .card:hover { border-color: var(--pink); }
+        .dna-score { color: var(--cyan); font-size: 1.8rem; font-weight: 800; }
+        .btn { padding: 10px 20px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; margin-right: 10px; transition: 0.2s; }
+        .btn-acc { background: #28a745; color: white; }
+        .btn-rej { background: #dc3545; color: white; }
+        .btn-hld { background: #ffc107; color: black; }
+        
+        /* Status Badge Styles */
+        .status-badge { padding: 10px 20px; border-radius: 6px; font-weight: bold; display: inline-block; text-transform: uppercase; letter-spacing: 1px; min-width: 120px; text-align: center; }
+        .bg-accepted { background: #28a745; color: white; }
+        .bg-rejected { background: #dc3545; color: white; }
+        .bg-hold { background: #ff8c00; color: white; } /* Orange background */
+
+        .info-panel { display: none; background: rgba(0,0,0,0.4); padding: 20px; margin-top: 15px; border-radius: 10px; border-left: 4px solid var(--cyan); }
+        .template-box { display: none; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; }
+        textarea { width: 100%; background: #111; color: #00FFCC; border: 1px solid #333; padding: 10px; border-radius: 5px; margin-bottom: 10px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1 style="color: var(--pink);">Recruiter Command Center</h1>
+    <p style="opacity: 0.6;">Official Admin Portal | sending from: <strong>recruiter4812@gmail.com</strong></p>
+    <hr style="opacity: 0.1; margin-bottom: 40px;">
+
+    {% for app in apps %}
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h2 style="margin: 0;">{{ app.applicant.username }}</h2>
+                <p style="color: var(--pink); margin: 5px 0;">{{ app.applicant.email }}</p>
+                <p>Applied for: <strong>{{ app.job_ref.title }}</strong> at {{ app.job_ref.company }}</p>
+                <button onclick="toggleInfo('{{ app.id }}')" style="background: none; border: 1px solid var(--cyan); color: var(--cyan); cursor: pointer; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem;">+ View Professional DNA & Resume</button>
+            </div>
+            <div style="text-align: right;">
+                <div class="dna-score">{{ app.applicant.trust_score }}%</div>
+                <div style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 15px;">TRUST SCORE</div>
+                
+                {% if app.status == 'Delivered' %}
+                    <button onclick="prepEmail('{{ app.id }}', 'Accepted', '{{ app.applicant.email }}', '{{ app.job_ref.title }}', '{{ app.job_ref.company }}')" class="btn btn-acc">Accept</button>
+                    <button onclick="prepEmail('{{ app.id }}', 'Rejected', '{{ app.applicant.email }}', '{{ app.job_ref.title }}', '{{ app.job_ref.company }}')" class="btn btn-rej">Reject</button>
+                    <button onclick="prepEmail('{{ app.id }}', 'On Hold', '{{ app.applicant.email }}', '{{ app.job_ref.title }}', '{{ app.job_ref.company }}')" class="btn btn-hld">Hold</button>
+                {% elif app.status == 'Accepted' %}
+                    <div class="status-badge bg-accepted">Accepted</div>
+                {% elif app.status == 'Rejected' %}
+                    <div class="status-badge bg-rejected">Rejected</div>
+                {% elif app.status == 'On Hold' %}
+                    <div class="status-badge bg-hold">Your On Hold!!</div>
+                {% else %}
+                    <div class="status-badge" style="background: #444;">{{ app.status }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="info-{{ app.id }}" class="info-panel">
+            <p><strong>Bio:</strong> {{ app.applicant.bio }}</p>
+            <p><strong>Skills:</strong> {{ app.applicant.skills }}</p>
+            <p><strong>GitHub:</strong> <a href="{{ app.applicant.github_link }}" target="_blank" style="color: var(--cyan);">View Profile</a></p>
+            <p><strong>Resume:</strong> <a href="#" style="color: var(--cyan);">Download PDF</a></p>
+        </div>
+
+        <div id="temp-{{ app.id }}" class="template-box">
+            <h4 id="label-{{ app.id }}" style="color: var(--cyan);"></h4>
+            <form action="/update_status" method="POST">
+                <input type="hidden" name="app_id" value="{{ app.id }}">
+                <input type="hidden" name="status" id="stat-{{ app.id }}">
+                <textarea name="message" id="msg-{{ app.id }}" rows="5"></textarea>
+                <button type="submit" class="btn btn-acc" style="width: 100%; margin-top: 10px;">
+                    Confirm Decision & Send Official Email
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+
+    <script>
+    function toggleInfo(id) {
+        let el = document.getElementById('info-' + id);
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function prepEmail(id, type, email, role, company) {
+        document.getElementById('temp-' + id).style.display = 'block';
+        document.getElementById('stat-' + id).value = type;
+        document.getElementById('label-' + id).innerText = "Drafting " + type + " Email to " + email;
+        
+        let msg = "";
+        if(type === 'Accepted') {
+            msg = `Hello ${email.split('@')[0]},\n\nCongratulations! We are pleased to inform you that you have been accepted for the ${role} position at ${company}. Your professional DNA and skills are a great match for our team.\n\nPlease check your dashboard for onboarding details.\n\nBest regards,\nRecruitment Team`;
+        } else if (type === 'Rejected') {
+            msg = `Hello,\n\nThank you for your interest in the ${role} position at ${company}. After reviewing your profile, we have decided to move forward with other candidates. We appreciate your time and wish you the best in your search.\n\nBest regards,\nRecruitment Team`;
+        } else {
+            msg = `Hello,\n\nYour application for ${role} at ${company} has been reviewed. We are impressed with your profile and are placing it "On Hold" for the next 3 months. We will contact you if a suitable slot opens up.\n\nBest regards,\nRecruitment Team`;
+        }
+        document.getElementById('msg-' + id).value = msg;
+    }
+    </script>
+</body>
+</html>

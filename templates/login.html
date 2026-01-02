@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-container" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding-top: 80px; padding-bottom: 50px;">
+    <div class="glass-card" style="width: 100%; max-width: 450px; padding: 40px; text-align: center; margin-top: 10px;">
+        <h1 style="color: var(--queen-pink); margin-bottom: 30px;">Welcome Back</h1>
+
+        <form action="{{ url_for('auth.login') }}" method="POST" autocomplete="off">
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="color: var(--queen-pink);">Email Address</label>
+                <input type="email" name="user_email_login" required autocomplete="off"
+                       style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+            </div>
+
+            <div style="text-align: left; margin-bottom: 30px; position: relative;">
+                <label style="color: var(--queen-pink);">Password</label>
+                <input type="password" id="loginPass" name="user_password_login" required autocomplete="new-password"
+                       style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+                <span onclick="togglePass()" style="position: absolute; right: 15px; top: 40px; cursor: pointer; color: #888;">👁️</span>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px;">Sign In</button>
+        </form>
+
+        <div style="margin: 20px 0; color: #888;">OR</div>
+
+        <a href="{{ url_for('auth.google_login') }}" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: white; color: black; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width: 18px;"> Continue with Google
+        </a>
+
+        <p style="margin-top: 25px; color: #888; font-size: 0.9rem;">
+            Not a customer? <a href="{{ url_for('auth.register') }}" style="color: var(--queen-pink); text-decoration: none; font-weight: bold;">Create new account</a>
+        </p>
+    </div>
+</div>
+
+<script>
+function togglePass() {
+    const p = document.getElementById('loginPass');
+    p.type = p.type === 'password' ? 'text' : 'password';
+}
+</script>
+{% endblock %}

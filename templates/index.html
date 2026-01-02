@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="text-align: center; padding: 100px 5%;">
+    <h1 class="text-mask-gradient" style="font-size: 5rem; margin-bottom: 20px;">
+        Your Professional DNA, <br> Perfectly Matched.
+    </h1>
+    <p style="color: var(--old-lavender); font-size: 1.5rem; max-width: 800px; margin: 0 auto 40px;">
+        Job Scout uses high-authority matching algorithms to find the top 15 roles 
+        that align with your unique skill sequence.
+    </p>
+    
+    <div style="display: flex; gap: 20px; justify-content: center;">
+        <a href="{{ url_for('auth.register') }}" class="btn-primary" style="padding: 18px 45px; font-size: 1.1rem;">Start Discovery</a>
+        <a href="#how-it-works" class="glass-card" style="padding: 18px 45px; text-decoration: none; color: white;">Learn More</a>
+    </div>
+</div>
+
+<section id="how-it-works" style="padding: 100px 5%;">
+    <div class="glass-card" style="padding: 60px; text-align: center;">
+        <h2 style="color: var(--queen-pink); font-size: 2.5rem; margin-bottom: 50px;">The Triple-Filter Process</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+            <div class="floating">
+                <h3 style="color: white;">1. Sequence</h3>
+                <p style="color: var(--old-lavender);">We parse your resume to extract 40+ unique data points.</p>
+            </div>
+            <div class="floating" style="animation-delay: 0.5s;">
+                <h3 style="color: white;">2. Match</h3>
+                <p style="color: var(--old-lavender);">Our Priority Engine compares you against 100+ active roles.</p>
+            </div>
+            <div class="floating" style="animation-delay: 1s;">
+                <h3 style="color: white;">3. Apply</h3>
+                <p style="color: var(--old-lavender);">The top 15 matches are delivered to your dashboard instantly.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
