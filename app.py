@@ -9,6 +9,13 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    # allow DATABASE_URL to override the default URI (used by Render/Heroku/Neon)
+    db_uri = os.environ.get('DATABASE_URL')
+    if db_uri:
+        # SQLAlchemy expects the scheme to be postgres:// or postgresql://
+        # Render/Heroku may provide a URI with sslmode and other params; pass as-is.
+        app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+
     db.init_app(app)
     login_manager.init_app(app)
     oauth.init_app(app)  
