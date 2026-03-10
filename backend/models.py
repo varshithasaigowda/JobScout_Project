@@ -17,8 +17,16 @@ class User(db.Model, UserMixin):
     github_link = db.Column(db.String(255), nullable=True)
     linkedin_link = db.Column(db.String(255), nullable=True)
     portfolio_link = db.Column(db.String(255), nullable=True)
+    # file storage used previously; replaced by binary fields
     resume_path = db.Column(db.String(255), nullable=True)
     certificate_path = db.Column(db.String(255), nullable=True)
+
+    # New fields for binary resume upload and session tracking
+    resume_pdf = db.Column(db.LargeBinary, nullable=True)
+    resume_filename = db.Column(db.String(255), nullable=True)
+    last_login_ip = db.Column(db.String(45), nullable=True)        # IPv4/IPv6 max length
+    last_login_time = db.Column(db.DateTime, nullable=True)
+
     trust_score = db.Column(db.Integer, default=10)
     
     # Relationship to applications

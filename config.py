@@ -7,7 +7,21 @@ load_dotenv(os.path.join(basedir, '.env'))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-12345'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'jobscout.db')
+
+    # determine database URI, prefer env var (Render/Heroku/Neon)
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    if not SQLALCHEMY_DATABASE_URI:
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'jobscout.db')
+
+    # SQLAlchemy requires postgresql:// scheme rather than postgres://
+    if SQLALCHEMY_DATABASE_URI.startswith('postgres://'):
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('postgres://', 'postgresql://', 1)
+
+    # ensure SSL mode for Neon if not already present
+    if 'postgres' in SQLALCHEMY_DATABASE_URI and 'sslmode' not in SQLALCHEMY_DATABASE_URI:
+        separator = '&' if '?' in SQLALCHEMY_DATABASE_URI else '?'
+        SQLALCHEMY_DATABASE_URI = f"{SQLALCHEMY_DATABASE_URI}{separator}sslmode=require"
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Session & Persistence Settings

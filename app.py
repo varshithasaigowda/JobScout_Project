@@ -12,8 +12,13 @@ def create_app():
     # allow DATABASE_URL to override the default URI (used by Render/Heroku/Neon)
     db_uri = os.environ.get('DATABASE_URL')
     if db_uri:
-        # SQLAlchemy expects the scheme to be postgres:// or postgresql://
-        # Render/Heroku may provide a URI with sslmode and other params; pass as-is.
+        # convert postgres:// to postgresql:// for SQLAlchemy
+        if db_uri.startswith('postgres://'):
+            db_uri = db_uri.replace('postgres://', 'postgresql://', 1)
+        # ensure sslmode=require for Neon unless already specified
+        if 'sslmode' not in db_uri:
+            sep = '&' if '?' in db_uri else '?'
+            db_uri = f"{db_uri}{sep}sslmode=require"
         app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 
     db.init_app(app)
@@ -86,4 +91,6 @@ if __name__ == '__main__':
         
         print("🧬 JOB SCOUT Engine Started.")
 
-    app.run(debug=True, port=5000)
+    # pick up PORT from environment for Render/Heroku/other platforms
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

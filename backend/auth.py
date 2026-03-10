@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 from werkzeug.utils import secure_filename
 from config import Config
 from extensions import db, oauth 
@@ -48,6 +49,11 @@ def callback():
         db.session.add(user)
         db.session.commit()
     
+    # update last login metadata
+    user.last_login_ip = request.remote_addr
+    user.last_login_time = datetime.utcnow()
+    db.session.commit()
+
     login_user(user, remember=True)
     # Set this session flag so app.py knows to show the success message
     session['google_login_success'] = True
@@ -63,6 +69,11 @@ def login():
         
         user = User.query.filter_by(email=email).first()
         if user and user.password_hash and check_password_hash(user.password_hash, password):
+            # update login info
+            user.last_login_ip = request.remote_addr
+            user.last_login_time = datetime.utcnow()
+            db.session.commit()
+
             login_user(user, remember=True)
             return redirect(url_for('dashboard'))
             
@@ -78,17 +89,14 @@ def edit_profile():
         current_user.skills = request.form.get('skills')
         current_user.github_link = request.form.get('github_link')
 
-        # File storage for Resume only (Profile Pic removed)
+        # Binary storage for resume document
         if 'resume' in request.files:
             file = request.files['resume']
             if file and file.filename != '':
-                base_dir = os.path.abspath(os.path.dirname(__file__))
-                upload_folder = os.path.join(base_dir, 'static', 'uploads')
-                if not os.path.exists(upload_folder):
-                    os.makedirs(upload_folder)
-                    
-                filename = secure_filename(f"user_{current_user.id}_resume.pdf")
-                file.save(os.path.join(upload_folder, filename))
+                filename = secure_filename(file.filename)
+                current_user.resume_pdf = file.read()
+                current_user.resume_filename = filename
+                # optionally keep old path field for compatibility
                 current_user.resume_path = filename
 
         current_user.trust_score = calculate_trust(current_user)
